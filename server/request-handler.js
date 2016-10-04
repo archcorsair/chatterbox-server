@@ -1,3 +1,4 @@
+const url = require('url');
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -11,8 +12,54 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+// Storage for messages
+var obj = obj || {results: []};
+
+
 
 var requestHandler = function(request, response) {
+  var blankObj = {results: []};
+  var url = request.url;
+  var method = request.method;
+  var statusCode = 404;
+  var body = [];
+
+  if (url === '/classes/messages') {
+    if (method === 'POST') {
+      statusCode = 201;
+      // obj.results.push(request._postData);
+      request.on('data', function(chunk) {
+        body.push(chunk);
+      });
+      request.on('end', function() {
+        statusCode = 201;
+        body = JSON.parse(body.toString());
+        obj.results.push(body);
+      });
+      // response.end(body);
+    }
+    if (method === 'GET'){
+      statusCode = 200;
+      console.log('inside GET: ', obj);
+      response.end(JSON.stringify(obj));
+    }
+  }
+  if(url === '/classes/room') {
+    if(method === 'POST') {
+      statusCode = 201;
+      // obj.results.push(request._postData);
+      request.on('data', function(chunk) {
+        body.push(chunk);
+      });
+      request.on('end', function() {
+        body = JSON.parse(body.toString());
+        obj.results.push(body);
+        statusCode = 201;
+      });
+      // response.end(body);
+    }
+  }
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -28,9 +75,8 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-
   // The outgoing status.
-  var statusCode = 200;
+  // var statusCode = 200;
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
@@ -45,6 +91,8 @@ var requestHandler = function(request, response) {
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
 
+
+
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
   // response.end() will be the body of the response - i.e. what shows
@@ -52,7 +100,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+  response.end(JSON.stringify(obj));
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -71,3 +119,4 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
+module.exports = {requestHandler};
