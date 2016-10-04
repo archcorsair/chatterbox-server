@@ -63,6 +63,7 @@ var app = {
       data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
+        data = JSON.parse(data);
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
 
@@ -76,7 +77,6 @@ var app = {
         if (mostRecentMessage.objectId !== app.lastMessageId) {
           // Update the UI with the fetched rooms
           app.renderRoomList(data.results);
-
           // Update the UI with the fetched messages
           app.renderMessages(data.results, animate);
 

@@ -1,4 +1,4 @@
-const url = require('url');
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -12,25 +12,33 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-// Storage for messages
-var obj = obj || {results: []};
+// Storage for messages // Default Data
+var obj = {results: []};
+
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
+var headers = defaultCorsHeaders;
 
 var requestHandler = function(request, response) {
-  var blankObj = {results: []};
   var url = request.url;
   var method = request.method;
   var statusCode = 404;
   var body = [];
 
   // If URL is for messages
-  if (url === '/classes/messages') {
-    if (method === 'POST') {
+  if (method === 'OPTIONS') {
+    statusCode = 200;
+    headers['Content-Type'] = 'text/plain';
+    response.writeHead(statusCode, headers);
+    response.end();
+  }
+
+  if (method === 'POST') {
+    if (url.includes('/classes/messages') || url.includes('/classes/room')) {
       statusCode = 201;
       request.on('data', function(chunk) {
         body.push(chunk);
@@ -39,33 +47,26 @@ var requestHandler = function(request, response) {
         statusCode = 201;
         body = JSON.parse(body.toString());
         obj.results.push(body);
+
+        response.writeHead(statusCode, headers);
+        response.end(JSON.stringify(obj));
       });
     }
-    if (method === 'GET') {
+  }
+
+  if (method === 'GET') {
+    if (url.includes('/classes/messages')) {
       statusCode = 200;
-      console.log('inside GET: ', obj);
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify(obj));
+    }
+    if (url.includes('?')) {
+      statusCode = 200;
+      response.writeHead(statusCode, headers);
       response.end(JSON.stringify(obj));
     }
   }
 
-  // If URL is for room
-  if (url === '/classes/room') {
-    if (method === 'POST') {
-      statusCode = 201;
-      request.on('data', function(chunk) {
-        body.push(chunk);
-      });
-      request.on('end', function() {
-        body = JSON.parse(body.toString());
-        obj.results.push(body);
-        statusCode = 201;
-      });
-    }
-  }
-
-  if (method === 'OPTIONS') {
-    statusCode = 200;
-  }
 
   // Request and Response come from node's http module.
   //
@@ -86,7 +87,6 @@ var requestHandler = function(request, response) {
   // var statusCode = 200;
 
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
   //
