@@ -3,14 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>chatterbox</title>
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="styles/styles.css">
 
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/underscore/underscore.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <!-- end dependencies -->
     <script>
       // YOU DO NOT NEED TO EDIT THIS CODE
       if (!/(&|\?)username=/.test(window.location.search)) {
@@ -24,34 +20,28 @@
     </script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
-    <!-- <script src="scripts/init.js"></script> -->
+    <script src="scripts/app.js"></script>
   </head>
   <body>
     <div id="main">
-      <h1>Le Chatterbox</h1>
-      <div class='hidden currentroom'></div>
+      <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
-      <div id='send'>
-        <input type="text" class="text-field form-control" placeholder="Type Your Message Here">
-        <input class='submit btn btn-default' type='submit' value='Submit'>
 
-        <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-            Rooms
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <!-- Channels will appear here. Example Channel:
-            <li><a href="#">Channel 1</a></li>
-            -->
-          </ul>
-        </div>
-        <button class='clear-btn btn btn-danger' type='button'>I'm Offended</button>
+      <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
+      <div id="rooms">
+        Room:
+        <select id="roomSelect">
+        </select>
       </div>
-    </div>
-    <div id="chats">
-        <!-- Chats will display here -->
-    </div>
-  </body>
-  <script src="scripts/app_es6.js"></script>
+      <form action="#" id="send" method="post">
+        <input type="text" name="message" id="message"/>
+        <input type="submit" name="submit" class="submit"/>
+      </form>    </div>
+    <div id="chats"></div>
+
+    <script>
+      $(function(){
+        app.init()
+      });
+    </script>  </body>
 </html>
