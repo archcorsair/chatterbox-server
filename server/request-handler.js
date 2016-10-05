@@ -13,7 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 // Storage for messages // Default Data
-var obj = {results: []};
+var storage = {results: []};
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -29,7 +29,6 @@ var requestHandler = function(request, response) {
   var statusCode = 404;
   var body = [];
 
-  // If URL is for messages
   if (method === 'OPTIONS') {
     statusCode = 200;
     headers['Content-Type'] = 'text/plain';
@@ -46,10 +45,11 @@ var requestHandler = function(request, response) {
       request.on('end', function() {
         statusCode = 201;
         body = JSON.parse(body.toString());
-        obj.results.push(body);
+        storage.results.push(body);
 
         response.writeHead(statusCode, headers);
-        response.end(JSON.stringify(obj));
+        storage.success = 'yay';
+        response.end(JSON.stringify(storage));
       });
     }
   }
@@ -58,12 +58,12 @@ var requestHandler = function(request, response) {
     if (url.includes('/classes/messages')) {
       statusCode = 200;
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(obj));
+      response.end(JSON.stringify(storage));
     }
     if (url.includes('?')) {
       statusCode = 200;
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(obj));
+      response.end(JSON.stringify(storage));
     }
   }
 
@@ -98,6 +98,7 @@ var requestHandler = function(request, response) {
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
 
+  response.end(JSON.stringify(storage));
 
 
   // Make sure to always call response.end() - Node may not send
@@ -107,7 +108,6 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end(JSON.stringify(obj));
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).

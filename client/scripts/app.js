@@ -40,7 +40,7 @@ var app = {
 
     // POST the message to the server
     $.ajax({
-      url: app.server,
+      url: 'http://127.0.0.1:3000',
       type: 'POST',
       data: JSON.stringify(message),
       success: function (data) {
@@ -58,14 +58,14 @@ var app = {
 
   fetch: function(animate) {
     $.ajax({
-      url: app.server,
+      url: 'http://127.0.0.1:3000/classes/messages',
       type: 'GET',
       data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
         data = JSON.parse(data);
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+        if (!data.results || !data.results.length) { app.stopSpinner(); return; }
 
         // Store messages for caching later
         app.messages = data.results;
@@ -215,7 +215,8 @@ var app = {
     var message = {
       username: app.username,
       text: app.$message.val(),
-      roomname: app.roomname || 'lobby'
+      roomname: app.roomname || 'lobby',
+      objectId: Math.floor(Math.rand() * 23234234)
     };
 
     app.send(message);
